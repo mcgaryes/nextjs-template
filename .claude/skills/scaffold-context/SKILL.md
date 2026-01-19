@@ -33,7 +33,7 @@ If invalid, inform the user and ask for a valid name.
 
 ### Step 3: Select Target Feature
 
-List all existing features by scanning `libs/features/` directory.
+List all existing features by scanning `lib/features/` directory.
 
 If no features exist, inform the user they need to create a feature first using `/scaffold-feature`.
 
@@ -47,7 +47,7 @@ If multiple features exist, use `AskUserQuestion` to ask which feature to add th
 
 ### Step 4: Ensure Contexts Directory Exists
 
-Check if `libs/features/{feature-name}/contexts/` directory exists. If not, create it along with an `index.ts` barrel file:
+Check if `lib/features/{feature-name}/contexts/` directory exists. If not, create it along with an `index.ts` barrel file:
 
 **contexts/index.ts:**
 ```typescript
@@ -66,7 +66,7 @@ Check if `libs/features/{feature-name}/contexts/` directory exists. If not, crea
 
 ### Step 5: Generate Context Files
 
-Create the context directory at `libs/features/{feature-name}/contexts/{context-name}/`.
+Create the context directory at `lib/features/{feature-name}/contexts/{context-name}/`.
 
 Generate the following 6 files:
 
@@ -217,7 +217,7 @@ After creating all files, output a summary:
 ```
 Created context: {context-name} in {feature-name}
 
-libs/features/{feature-name}/contexts/{context-name}/
+lib/features/{feature-name}/contexts/{context-name}/
 ├── {context-name}-state.tsx
 ├── {context-name}-actions.tsx
 ├── {context-name}-reducer.tsx

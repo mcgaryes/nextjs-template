@@ -8,7 +8,7 @@
         "build:analyze": "ANALYZE=true next build",
         "start": "next start",
         "lint": "eslint",
-        "format": "prettier --write \"app/**/*.ts*\" \"libs/**/*.ts*\""
+        "format": "prettier --write \"app/**/*.ts*\" \"lib/**/*.ts*\""
     },
     "dependencies": {
         "@radix-ui/react-slot": "^1.2.4",

@@ -19,12 +19,12 @@ This is a Next.js 16 application using the App Router with a feature-based archi
 ### Directory Structure
 
 - `app/` - Next.js App Router pages and layouts
-- `libs/features/` - Feature modules (self-contained domain logic)
-- `libs/utilities/` - Shared utility functions
+- `lib/features/` - Feature modules (self-contained domain logic)
+- `lib/utilities/` - Shared utility functions
 
 ### Feature Module Structure
 
-Features are self-contained modules located in `libs/features/`. Each feature can contain:
+Features are self-contained modules located in `lib/features/`. Each feature can contain:
 
 ```
 feature-name/

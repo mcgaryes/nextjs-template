@@ -33,7 +33,7 @@ If invalid, inform the user and ask for a valid name.
 
 ### Step 3: Select Target Feature
 
-List all existing features by scanning `libs/features/` directory.
+List all existing features by scanning `lib/features/` directory.
 
 If no features exist, inform the user they need to create a feature first using `/scaffold-feature`.
 
@@ -91,7 +91,7 @@ npx shadcn@latest add card --yes
 
 ### Step 6: Generate Component Files
 
-Create the component directory at `libs/features/{feature-name}/components/{component-name}/`.
+Create the component directory at `lib/features/{feature-name}/components/{component-name}/`.
 
 #### Always create these files:
 
@@ -265,7 +265,7 @@ After creating all files, output a summary:
 ```
 Created component: {component-name} in {feature-name}
 
-libs/features/{feature-name}/components/{component-name}/
+lib/features/{feature-name}/components/{component-name}/
 ├── {component-name}.tsx
 ├── {component-name}-loading.tsx
 ├── {component-name}-empty.tsx
