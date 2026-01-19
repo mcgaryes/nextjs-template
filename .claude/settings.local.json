@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)"
+    ]
+  },
+  "hooks": {
+    "EventName": [
+      {
+        "matcher": "ToolPattern",
+        "hooks": [
+          {
+            "type": "after_write",
+            "command": "scripts/claude-hooks/prettier-after-change.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

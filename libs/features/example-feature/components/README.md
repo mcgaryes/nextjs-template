@@ -1,6 +1,7 @@
 # Feature Components
 
-Components are the UI building blocks within a feature. Each component is organized in its own directory with a consistent file structure that handles all UI states: loading, empty, error, and the main view.
+Components are the UI building blocks within a feature. Each component is organized in its own directory with a
+consistent file structure that handles all UI states: loading, empty, error, and the main view.
 
 ## Directory Structure
 
@@ -23,18 +24,18 @@ components/
 
 Components follow a layered architecture that separates concerns:
 
-- Main Component (Orchestrator)           
-   - ErrorBoundary wrapper                 
-   - Suspense boundary                     
-   - Container styling                     
-- View Component (UI Logic)               
-   - Data fetching via hooks               
-   - User interactions                     
-   - Conditional rendering (empty state)   
-- State Components                        
-   - Loading (skeleton)                    
-   - Empty (no data)                       
-   - Error (fallback)                      
+- Main Component (Orchestrator)
+    - ErrorBoundary wrapper
+    - Suspense boundary
+    - Container styling
+- View Component (UI Logic)
+    - Data fetching via hooks
+    - User interactions
+    - Conditional rendering (empty state)
+- State Components
+    - Loading (skeleton)
+    - Empty (no data)
+    - Error (fallback)
 
 ---
 
@@ -44,33 +45,33 @@ Components follow a layered architecture that separates concerns:
 
 The orchestrator that composes error handling, suspense, and the view.
 
-```typescript
-import { Suspense } from "react";
-import { ErrorBoundary } from "@/components/error-boundary";
-import { FeatureCardView } from "./feature-card-view";
-import { FeatureCardLoading } from "./feature-card-loading";
-import { FeatureCardErrored } from "./feature-card-errored";
+```tsx
+import {Suspense} from "react";
+import {ErrorBoundary} from "@/components/error-boundary";
+import {FeatureCardView} from "./feature-card-view";
+import {FeatureCardLoading} from "./feature-card-loading";
+import {FeatureCardErrored} from "./feature-card-errored";
 
 export interface FeatureCardProps {
-itemId: string;
-className?: string;
+    itemId: string;
+    className?: string;
 }
 
 export function FeatureCard(props: FeatureCardProps) {
-const { itemId, className } = props;
+    const {itemId, className} = props;
 
-      return (
-          <ErrorBoundary 
-              fallback={<FeatureCardErrored />}
-              componentName="FeatureCard"
-          >
-              <div className={className}>
-                  <Suspense fallback={<FeatureCardLoading />}>
-                      <FeatureCardView itemId={itemId} />
-                  </Suspense>
-              </div>
-          </ErrorBoundary>
-      );
+    return (
+        <ErrorBoundary
+            fallback={<FeatureCardErrored/>}
+            componentName="FeatureCard"
+        >
+            <div className={className}>
+                <Suspense fallback={<FeatureCardLoading/>}>
+                    <FeatureCardView itemId={itemId}/>
+                </Suspense>
+            </div>
+        </ErrorBoundary>
+    );
 
 }
 ```
@@ -93,51 +94,51 @@ const { itemId, className } = props;
 
 Contains the actual UI logic, data fetching, and user interactions.
 
-```typescript
+```tsx
 "use client";
 
-import { useState, useCallback } from "react";
-import { useFeatureData } from "../../hooks/use-feature-data";
-import { FeatureCardEmpty } from "./feature-card-empty";
+import {useState, useCallback} from "react";
+import {useFeatureData} from "../../hooks/use-feature-data";
+import {FeatureCardEmpty} from "./feature-card-empty";
 
 export interface FeatureCardViewProps {
-itemId: string;
+    itemId: string;
 }
 
 export function FeatureCardView(props: FeatureCardViewProps) {
-const { itemId } = props;
-const { items, pages } = useFeatureData({ itemId });
-const [selectedItem, setSelectedItem] = useState(null);
+    const {itemId} = props;
+    const {items, pages} = useFeatureData({itemId});
+    const [selectedItem, setSelectedItem] = useState(null);
 
-      const handleSelect = useCallback((item) => {
-          setSelectedItem(item);
-      }, []);
+    const handleSelect = useCallback((item) => {
+        setSelectedItem(item);
+    }, []);
 
-      // Handle empty state
-      if (items.length === 0) {
-          return <FeatureCardEmpty />;
-      }
+    // Handle empty state
+    if (items.length === 0) {
+        return <FeatureCardEmpty/>;
+    }
 
-      return (
-          <div className="space-y-4">
-              <header className="flex items-center justify-between">
-                  <h2 className="font-semibold">Feature Title</h2>
-                  <nav>{/* Navigation controls */}</nav>
-              </header>
+    return (
+        <div className="space-y-4">
+            <header className="flex items-center justify-between">
+                <h2 className="font-semibold">Feature Title</h2>
+                <nav>{/* Navigation controls */}</nav>
+            </header>
 
-              <main>
-                  {items.map((item) => (
-                      <button
-                          key={item.id}
-                          onClick={() => handleSelect(item)}
-                          className="..."
-                      >
-                          {item.name}
-                      </button>
-                  ))}
-              </main>
-          </div>
-      );
+            <main>
+                {items.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => handleSelect(item)}
+                        className="..."
+                    >
+                        {item.name}
+                    </button>
+                ))}
+            </main>
+        </div>
+    );
 
 }
 ```
@@ -162,33 +163,33 @@ const [selectedItem, setSelectedItem] = useState(null);
 
 Skeleton UI that mirrors the structure of the loaded component.
 
-```typescript
+```tsx
 export function FeatureCardLoading() {
-return (
-<div className="space-y-4">
-{/* Header skeleton */}
-<div className="flex items-center justify-between">
-<div className="h-5 w-32 bg-stone-200 rounded animate-pulse" />
-<div className="flex gap-2">
-<div className="h-8 w-8 bg-stone-200 rounded animate-pulse" />
-<div className="h-8 w-8 bg-stone-200 rounded animate-pulse" />
-</div>
-</div>
+    return (
+        <div className="space-y-4">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between">
+                <div className="h-5 w-32 bg-stone-200 rounded animate-pulse"/>
+                <div className="flex gap-2">
+                    <div className="h-8 w-8 bg-stone-200 rounded animate-pulse"/>
+                    <div className="h-8 w-8 bg-stone-200 rounded animate-pulse"/>
+                </div>
+            </div>
 
-              {/* Content skeleton */}
-              <div className="flex gap-4">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                      <div 
-                          key={index} 
-                          className="flex-1 h-28 bg-stone-100 rounded-lg p-4"
-                      >
-                          <div className="h-4 w-3/4 bg-stone-200 rounded animate-pulse mb-2" />
-                          <div className="h-3 w-1/2 bg-stone-200 rounded animate-pulse" />
-                      </div>
-                  ))}
-              </div>
-          </div>
-      );
+            {/* Content skeleton */}
+            <div className="flex gap-4">
+                {Array.from({length: 3}).map((_, index) => (
+                    <div
+                        key={index}
+                        className="flex-1 h-28 bg-stone-100 rounded-lg p-4"
+                    >
+                        <div className="h-4 w-3/4 bg-stone-200 rounded animate-pulse mb-2"/>
+                        <div className="h-3 w-1/2 bg-stone-200 rounded animate-pulse"/>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 
 }
 ```
@@ -207,16 +208,16 @@ return (
 
 Displayed when data exists but is empty.
 
-```typescript
+```tsx
 export function FeatureCardEmpty() {
-return (
-<div className="flex flex-col items-center justify-center py-12">
-<EmptyIcon className="w-12 h-12 text-stone-400 mb-4" />
-<p className="text-stone-500 text-center">
-No items available. Please check back later.
-</p>
-</div>
-);
+    return (
+        <div className="flex flex-col items-center justify-center py-12">
+            <EmptyIcon className="w-12 h-12 text-stone-400 mb-4"/>
+            <p className="text-stone-500 text-center">
+                No items available. Please check back later.
+            </p>
+        </div>
+    );
 }
 ```
 
@@ -233,16 +234,16 @@ No items available. Please check back later.
 
 Fallback UI when an error occurs.
 
-```typescript
+```tsx
 export function FeatureCardErrored() {
-return (
-<div className="flex flex-col items-center justify-center py-12">
-<ErrorIcon className="w-12 h-12 text-red-400 mb-4" />
-<p className="text-stone-500 text-center">
-An error occurred while loading. Please try again later.
-</p>
-</div>
-);
+    return (
+        <div className="flex flex-col items-center justify-center py-12">
+            <ErrorIcon className="w-12 h-12 text-red-400 mb-4"/>
+            <p className="text-stone-500 text-center">
+                An error occurred while loading. Please try again later.
+            </p>
+        </div>
+    );
 }
 ```
 
@@ -260,10 +261,10 @@ An error occurred while loading. Please try again later.
 Export all public components from the directory.
 
 ```typescript
-export { FeatureCard } from "./feature-card";
-export { FeatureCardLoading } from "./feature-card-loading";
-export { FeatureCardEmpty } from "./feature-card-empty";
-export { FeatureCardErrored } from "./feature-card-errored";
+export {FeatureCard} from "./feature-card";
+export {FeatureCardLoading} from "./feature-card-loading";
+export {FeatureCardEmpty} from "./feature-card-empty";
+export {FeatureCardErrored} from "./feature-card-errored";
 ```
 
 Note: The view component is typically internal and not exported.
@@ -276,29 +277,29 @@ Note: The view component is typically internal and not exported.
 // Main component props
 export interface FeatureCardProps {
 // Required data identifiers
-itemId: string;
+    itemId: string;
 
-      // Optional styling
-      className?: string;
+    // Optional styling
+    className?: string;
 
-      // Optional behavior modifiers
-      isCompact?: boolean;
+    // Optional behavior modifiers
+    isCompact?: boolean;
 
-      // Optional callbacks
-      onSelect?: (item: Item) => void;
+    // Optional callbacks
+    onSelect?: (item: Item) => void;
 
 }
 
 // View component props (subset of main props)
 export interface FeatureCardViewProps {
-itemId: string;
-onSelect?: (item: Item) => void;
+    itemId: string;
+    onSelect?: (item: Item) => void;
 }
 
 // Loading component props (layout-affecting only)
 export interface FeatureCardLoadingProps {
-isCompact?: boolean;
-className?: string;
+    isCompact?: boolean;
+    className?: string;
 }
 ```
 
@@ -332,14 +333,16 @@ Use CSS Modules for:
 ## State Management Within Components
 
 ### Local State
+
 ```typescript
 const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 const [currentPage, setCurrentPage] = useState(0);
 ```
 
 ### Boolean State (usehooks-ts)
+
 ```typescript
-import { useBoolean } from "usehooks-ts";
+import {useBoolean} from "usehooks-ts";
 
 const isModalOpen = useBoolean(false);
 // isModalOpen.value, isModalOpen.setTrue, isModalOpen.setFalse

@@ -72,7 +72,7 @@ export function useFeatureData(
 
 ## Hook Structure Requirements
 
-1. Client Directive (Next.js App Router)
+### Client Directive (Next.js App Router)
 
 ```typescript
 "use client";
@@ -80,7 +80,7 @@ export function useFeatureData(
 
 Required for hooks that use React hooks (useState, useEffect, useMemo, etc.) in Next.js App Router.
 
-2. Parameters Interface
+### Parameters Interface
 
 ```
 export interface Use{FeatureName}{Purpose}Params {
@@ -93,7 +93,7 @@ export interface Use{FeatureName}{Purpose}Params {
 - Export the interface for consumers to use
 - Use optional properties with defaults where appropriate
 
-3. Return Value Interface
+### Return Value Interface
 
 ```
 export interface Use{FeatureName}{Purpose}ReturnValue {
@@ -107,7 +107,7 @@ export interface Use{FeatureName}{Purpose}ReturnValue {
 - Always export for type safety
 - Include loading/error states for data-fetching hooks
 
-4. Hook Function
+### Hook Function
 
 ```
 export function use{FeatureName}{Purpose}(params: Use{FeatureName}{Purpose}Params): Use{FeatureName}{Purpose}ReturnValue {
@@ -173,7 +173,6 @@ const {data} = useSWR<T>(endpoint, fetcher, {suspense: true});
 return {
     data: data ?? [],  // New array reference each time
 };
-
 
 // GOOD: Memoize to preserve referential equality
 const memoizedData = useMemo(() => data ?? [], [data]);
@@ -260,7 +259,7 @@ export function useItemDetails(params: UseItemDetailsParams) {
 
 Use `@testing-library/react` with MSW for API mocking:
 
-```typescript
+```tsx
 import {renderHook, waitFor, act} from "@testing-library/react";
 import {http, HttpResponse} from "msw";
 import {setupServer} from "msw/node";
@@ -285,19 +284,19 @@ describe("useItems", () => {
 
         // Act
         const {result} = renderHook(
-            () => useItems({categoryId: "123"}),
-            {
-                wrapper: ({children}) => (
-                    <SWRConfig value = {
-        {
-            dedupingInterval: 0
-        }
-    }>
-        <Suspense fallback = {null} > {children} < /Suspense>
-            < /SWRConfig>
-    ),
-    }
-    )
+                () => useItems({categoryId: "123"}),
+                {
+                    wrapper: ({children}) => (
+                        <SWRConfig value={
+                            {
+                                dedupingInterval: 0
+                            }
+                        }>
+                            <Suspense fallback={null}> {children} < /Suspense>
+                        < /SWRConfig>
+                    ),
+                }
+            )
         ;
 
         // Assert

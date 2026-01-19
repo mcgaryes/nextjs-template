@@ -353,14 +353,14 @@ export interface PaginatedResponse<T> {
 
 ## File Naming Conventions:
 
-| Pattern | Example | Use Case |
+| Pattern                  | Example                  | Use Case              |
 |--------------------------|--------------------------|-----------------------|
 | `{entity}.ts`            | `user.ts`                | Main entity interface |
 | `{entity}-type.ts`       | `user-type.ts`           | Enum for entity types |
-| `{entity}-status.ts`     | `order-status.ts`        | Status enum |
-| `{feature}-constants.ts` | `dashboard-constants.ts` | Feature constants |
-| `{entity}-metadata.ts`   | `action-metadata.ts`     | Metadata interface |
-| `{feature}-routes.ts`    | `app-routes.ts`          | Route configurations |
+| `{entity}-status.ts`     | `order-status.ts`        | Status enum           |
+| `{feature}-constants.ts` | `dashboard-constants.ts` | Feature constants     |
+| `{entity}-metadata.ts`   | `action-metadata.ts`     | Metadata interface    |
+| `{feature}-routes.ts`    | `app-routes.ts`          | Route configurations  |
 
 ---
 
