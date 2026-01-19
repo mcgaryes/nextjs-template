@@ -110,7 +110,9 @@ export interface {ComponentName}Props {
   // Add your props here
 }
 
-export const {ComponentName}: FC<{ComponentName}Props> = (props) => {
+export const {ComponentName}: FC<{ComponentName}Props> = (props: {ComponentName}Props) => {
+  const {} = props;
+
   return (
     <Card>
       <CardHeader>
@@ -164,9 +166,9 @@ export interface {ComponentName}EmptyProps {
   message?: string;
 }
 
-export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = ({
-  message = "No data available",
-}) => {
+export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = (props: {ComponentName}EmptyProps) => {
+  const { message = "No data available" } = props;
+
   return (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-12">
@@ -188,10 +190,9 @@ export interface {ComponentName}ErroredProps {
   onRetry?: () => void;
 }
 
-export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = ({
-  error,
-  onRetry,
-}) => {
+export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = (props: {ComponentName}ErroredProps) => {
+  const { error, onRetry } = props;
+
   return (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-12 gap-4">
@@ -232,10 +233,9 @@ export interface {ComponentName}ViewProps {
   onSelect?: (item: unknown) => void;
 }
 
-export const {ComponentName}View: FC<{ComponentName}ViewProps> = ({
-  items,
-  onSelect,
-}) => {
+export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props: {ComponentName}ViewProps) => {
+  const { items, onSelect } = props;
+
   // UI-only local state is allowed (hover, focus, dropdown visibility)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -355,13 +355,16 @@ lib/features/{feature-name}/
 
 ```tsx
 // Main component calls hook and passes data to view
-export const FeatureCard: FC<FeatureCardProps> = ({ itemId }) => {
+export const FeatureCard: FC<FeatureCardProps> = (props: FeatureCardProps) => {
+  const { itemId } = props;
   const { items, onSelect } = useFeatureCard({ itemId });
   return <FeatureCardView items={items} onSelect={onSelect} />;
 };
 
 // View is presentational only - receives everything via props
-export const FeatureCardView: FC<FeatureCardViewProps> = ({ items, onSelect }) => {
+export const FeatureCardView: FC<FeatureCardViewProps> = (props: FeatureCardViewProps) => {
+  const { items, onSelect } = props;
+
   // UI-only state is allowed
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   return (/* render items */);

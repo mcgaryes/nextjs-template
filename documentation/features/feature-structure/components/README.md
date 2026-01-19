@@ -24,7 +24,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function FeatureCard({ title, children }) {
+export function FeatureCard(props: FeatureCardProps) {
+  const { title, children } = props;
+
   return (
     <Card>
       <CardHeader>
@@ -36,7 +38,9 @@ export function FeatureCard({ title, children }) {
 }
 
 // ❌ WRONG: Custom implementation
-export function FeatureCard({ title, children }) {
+export function FeatureCard(props: FeatureCardProps) {
+  const { title, children } = props;
+
   return (
     <div className="rounded-lg border p-4">
       <h3 className="font-bold">{title}</h3>
@@ -126,13 +130,15 @@ View components may only use hooks for **UI-only state**:
 
 ```tsx
 // ❌ WRONG: View component fetches its own data
-export function FeatureCardView({ itemId }: FeatureCardViewProps) {
+export function FeatureCardView(props: FeatureCardViewProps) {
+  const { itemId } = props;
   const { items, isLoading } = useFeatureData({ itemId }); // Don't do this!
   // ...
 }
 
 // ✅ CORRECT: Main component owns data, View receives via props
-export function FeatureCard({ itemId }: FeatureCardProps) {
+export function FeatureCard(props: FeatureCardProps) {
+  const { itemId } = props;
   const { items, isLoading, onSelect } = useFeatureData({ itemId });
 
   if (isLoading) return <FeatureCardLoading />;
@@ -141,7 +147,9 @@ export function FeatureCard({ itemId }: FeatureCardProps) {
   return <FeatureCardView items={items} onSelect={onSelect} />;
 }
 
-export function FeatureCardView({ items, onSelect }: FeatureCardViewProps) {
+export function FeatureCardView(props: FeatureCardViewProps) {
+  const { items, onSelect } = props;
+
   // Pure presentation - no data fetching
   const [hoveredId, setHoveredId] = useState<string | null>(null); // UI-only state is OK
 
