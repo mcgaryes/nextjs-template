@@ -84,14 +84,85 @@ Components follow a layered architecture that separates concerns:
     - ErrorBoundary wrapper
     - Suspense boundary
     - Container styling
-- View Component (UI Logic)
-    - Data fetching via hooks
-    - User interactions
-    - Conditional rendering (empty state)
+    - Calls hooks for data fetching and business logic
+    - Passes data and callbacks to View component
+- View Component (Presentational)
+    - Receives ALL data and callbacks via props
+    - Pure presentation logic only
+    - May use UI-only local state (e.g., `useState` for dropdowns, modals)
+    - No data-fetching hooks
 - State Components
     - Loading (skeleton)
     - Empty (no data)
     - Error (fallback)
+
+---
+
+## Dumb Component Pattern
+
+**All feature components follow the "dumb component" (presentational) pattern.** This means:
+
+### Core Principles
+
+1. **Components are presentational only** - They render UI based on props, nothing more
+2. **All data comes via props** - Data, loading states, error states, and callbacks are passed down
+3. **Business logic lives in hooks** - Data fetching, transformations, and side effects belong in hooks
+4. **Components don't fetch data** - No `useFeatureData()` or similar hooks inside view components
+
+### Allowed Hooks in Components
+
+View components may only use hooks for **UI-only state**:
+- `useState` for local visual state (dropdown open/closed, modal visibility, hover states)
+- `useRef` for DOM references
+- `useCallback`/`useMemo` for performance optimization of UI logic
+
+### Not Allowed in Components
+
+- Data-fetching hooks (`useSWR`, `useQuery`, custom data hooks)
+- Business logic hooks that manage feature state
+- Side effect hooks that interact with APIs
+
+### Pattern Example
+
+```tsx
+// ❌ WRONG: View component fetches its own data
+export function FeatureCardView({ itemId }: FeatureCardViewProps) {
+  const { items, isLoading } = useFeatureData({ itemId }); // Don't do this!
+  // ...
+}
+
+// ✅ CORRECT: Main component owns data, View receives via props
+export function FeatureCard({ itemId }: FeatureCardProps) {
+  const { items, isLoading, onSelect } = useFeatureData({ itemId });
+
+  if (isLoading) return <FeatureCardLoading />;
+  if (items.length === 0) return <FeatureCardEmpty />;
+
+  return <FeatureCardView items={items} onSelect={onSelect} />;
+}
+
+export function FeatureCardView({ items, onSelect }: FeatureCardViewProps) {
+  // Pure presentation - no data fetching
+  const [hoveredId, setHoveredId] = useState<string | null>(null); // UI-only state is OK
+
+  return (
+    <div>
+      {items.map((item) => (
+        <button key={item.id} onClick={() => onSelect(item)}>
+          {item.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+### Benefits
+
+- **Testability**: View components can be tested with simple props, no mocking needed
+- **Reusability**: Presentational components can be reused with different data sources
+- **Clarity**: Clear separation between "what to render" and "where data comes from"
+- **Debugging**: Data flow is explicit and traceable through props
 
 ---
 
@@ -148,32 +219,25 @@ export function FeatureCard(props: FeatureCardProps) {
 
 ### View Component ({component-name}-view.tsx)
 
-Contains the actual UI logic, data fetching, and user interactions.
+Presentational component that receives all data and callbacks via props.
 
 ```tsx
 "use client";
 
-import {useState, useCallback} from "react";
-import {useFeatureData} from "../../hooks/use-feature-data";
-import {FeatureCardEmpty} from "./feature-card-empty";
+import {useState} from "react";
 
+// Presentational component - receives all data and callbacks via props
 export interface FeatureCardViewProps {
-    itemId: string;
+    items: Item[];
+    selectedItem: Item | null;
+    onSelect: (item: Item) => void;
 }
 
 export function FeatureCardView(props: FeatureCardViewProps) {
-    const {itemId} = props;
-    const {items, pages} = useFeatureData({itemId});
-    const [selectedItem, setSelectedItem] = useState(null);
+    const {items, selectedItem, onSelect} = props;
 
-    const handleSelect = useCallback((item) => {
-        setSelectedItem(item);
-    }, []);
-
-    // Handle empty state
-    if (items.length === 0) {
-        return <FeatureCardEmpty/>;
-    }
+    // UI-only local state is allowed (dropdown, hover, etc.)
+    const [hoveredId, setHoveredId] = useState<string | null>(null);
 
     return (
         <div className="space-y-4">
@@ -186,8 +250,10 @@ export function FeatureCardView(props: FeatureCardViewProps) {
                 {items.map((item) => (
                     <button
                         key={item.id}
-                        onClick={() => handleSelect(item)}
-                        className="..."
+                        onClick={() => onSelect(item)}
+                        onMouseEnter={() => setHoveredId(item.id)}
+                        onMouseLeave={() => setHoveredId(null)}
+                        className={hoveredId === item.id ? "highlighted" : ""}
                     >
                         {item.name}
                     </button>
@@ -201,17 +267,17 @@ export function FeatureCardView(props: FeatureCardViewProps) {
 
 #### Responsibilities:
 
-- Fetch data using feature hooks
-- Manage local UI state (selections, pagination, etc.)
-- Handle user interactions
-- Render empty state when no data
+- Render UI based on props received from main component
+- Manage UI-only local state (hover, focus, dropdown visibility)
+- Call callbacks passed via props for user interactions
 - Contains the primary UI markup
 
 #### Key patterns:
 
 - Mark as "use client" when using hooks or event handlers
-- Use useCallback for event handlers passed to children
-- Check for empty data and render empty state component
+- Receive data, loading states, and callbacks via props
+- No data-fetching hooks—all data comes from parent
+- Only use `useState` for UI-only state (hover, dropdowns, modals)
 
 ---
 
@@ -330,9 +396,9 @@ Note: The view component is typically internal and not exported.
 #### Props Interface Conventions
 
 ```typescript
-// Main component props
+// Main component props - receives identifiers, passes to hooks
 export interface FeatureCardProps {
-// Required data identifiers
+    // Required data identifiers (passed to hooks)
     itemId: string;
 
     // Optional styling
@@ -341,15 +407,19 @@ export interface FeatureCardProps {
     // Optional behavior modifiers
     isCompact?: boolean;
 
-    // Optional callbacks
+    // Optional callbacks from parent
     onSelect?: (item: Item) => void;
-
 }
 
-// View component props (subset of main props)
+// View component props - receives data and callbacks from main component
 export interface FeatureCardViewProps {
-    itemId: string;
-    onSelect?: (item: Item) => void;
+    // Data from hooks (passed down from main component)
+    items: Item[];
+    selectedItem: Item | null;
+
+    // Callbacks from hooks (passed down from main component)
+    onSelect: (item: Item) => void;
+    onClear: () => void;
 }
 
 // Loading component props (layout-affecting only)
@@ -414,7 +484,10 @@ Use a Context when state needs to be shared across multiple nested components.
 
 - Create component directory with kebab-case name
 - Implement main component with ErrorBoundary + Suspense
-- Implement view component with data fetching
+- Main component calls hooks for data fetching
+- Main component passes data and callbacks to view
+- Implement view component as presentational (receives all data via props)
+- View component has no data-fetching hooks
 - Implement loading skeleton matching view structure
 - Implement empty state with helpful message
 - Implement error state with fallback UI
@@ -422,17 +495,18 @@ Use a Context when state needs to be shared across multiple nested components.
 - Add "use client" directive where needed
 - Define and export props interfaces
 - Match loading skeleton dimensions to loaded state
+- Consider creating a companion hook if component needs business logic
 
 ---
 
 ## File Naming Summary
 
-| File                     | Purpose                     |
-|--------------------------|-----------------------------|
-| feature-card.tsx         | Main orchestrator component |
-| feature-card-view.tsx    | UI logic and rendering      |
-| feature-card-loading.tsx | Skeleton/loading state      |
-| feature-card-empty.tsx   | Empty data state            |
-| feature-card-errored.tsx | Error fallback state        |
-| feature-card.module.css  | Scoped CSS (optional)       |
-| index.ts                 | Barrel exports              |
+| File                     | Purpose                              |
+|--------------------------|--------------------------------------|
+| feature-card.tsx         | Main orchestrator component          |
+| feature-card-view.tsx    | Presentational view (receives props) |
+| feature-card-loading.tsx | Skeleton/loading state               |
+| feature-card-empty.tsx   | Empty data state                     |
+| feature-card-errored.tsx | Error fallback state                 |
+| feature-card.module.css  | Scoped CSS (optional)                |
+| index.ts                 | Barrel exports                       |

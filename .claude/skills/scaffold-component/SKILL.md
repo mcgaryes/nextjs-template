@@ -211,7 +211,10 @@ export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = ({
 
 **{component-name}-view.tsx** (if View selected):
 ```tsx
+"use client";
+
 import { type FC } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -219,13 +222,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type {ComponentName}Props } from "./{component-name}";
 
-export interface {ComponentName}ViewProps extends {ComponentName}Props {
-  // Add view-specific props here
+// Presentational component - receives all data and callbacks via props
+// No data-fetching hooks allowed here
+export interface {ComponentName}ViewProps {
+  // Data props (passed from main component)
+  items: unknown[];
+  // Callback props (passed from main component)
+  onSelect?: (item: unknown) => void;
 }
 
-export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props) => {
+export const {ComponentName}View: FC<{ComponentName}ViewProps> = ({
+  items,
+  onSelect,
+}) => {
+  // UI-only local state is allowed (hover, focus, dropdown visibility)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <Card>
       <CardHeader>
@@ -233,7 +246,17 @@ export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props) => {
         <CardDescription>Component description</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Presentation markup using shadcn components */}
+        {/* Presentation markup - render data from props */}
+        {items.map((item, index) => (
+          <div
+            key={index}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            onClick={() => onSelect?.(item)}
+          >
+            {/* Render item */}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );
@@ -270,12 +293,15 @@ lib/features/{feature-name}/components/{component-name}/
 ├── {component-name}-loading.tsx
 ├── {component-name}-empty.tsx
 ├── {component-name}-errored.tsx
+├── {component-name}-view.tsx
 └── index.ts
 
 Next steps:
 1. Define your component props in {component-name}.tsx
-2. Implement the component UI
-3. Customize state files as needed
+2. Implement the component UI using shadcn components
+3. If this component needs data fetching, create a companion hook at:
+   lib/features/{feature-name}/hooks/use-{component-name}.ts
+4. Remember: View components are presentational only - pass all data via props
 ```
 
 Adjust the tree output based on which files were actually created.
@@ -291,3 +317,53 @@ Convert kebab-case to PascalCase by:
 3. Joining without separators
 
 Example: `user-profile-card` → `UserProfileCard`
+
+---
+
+## Dumb Component Pattern
+
+**All scaffolded components must follow the "dumb component" (presentational) pattern.**
+
+### Core Principles
+
+1. **Components are presentational only** - They render UI based on props
+2. **All data comes via props** - Data, callbacks, and state are passed down
+3. **No data-fetching hooks in components** - No `useSWR`, `useQuery`, or custom data hooks inside view components
+4. **Business logic lives in hooks** - Create a companion hook if the component needs data fetching
+
+### Allowed Hooks in Components
+
+View components may only use hooks for **UI-only state**:
+- `useState` for local visual state (dropdown open/closed, hover, focus)
+- `useRef` for DOM references
+- `useCallback`/`useMemo` for UI performance optimization
+
+### When to Create a Companion Hook
+
+If the component needs business logic (data fetching, state management, API calls), create a companion hook in the feature's `hooks/` directory:
+
+```
+lib/features/{feature-name}/
+├── components/{component-name}/
+│   ├── {component-name}.tsx          # Calls the hook, passes data to view
+│   └── {component-name}-view.tsx     # Presentational only
+└── hooks/
+    └── use-{component-name}.ts       # Business logic
+```
+
+### Example Pattern
+
+```tsx
+// Main component calls hook and passes data to view
+export const FeatureCard: FC<FeatureCardProps> = ({ itemId }) => {
+  const { items, onSelect } = useFeatureCard({ itemId });
+  return <FeatureCardView items={items} onSelect={onSelect} />;
+};
+
+// View is presentational only - receives everything via props
+export const FeatureCardView: FC<FeatureCardViewProps> = ({ items, onSelect }) => {
+  // UI-only state is allowed
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  return (/* render items */);
+};
+```

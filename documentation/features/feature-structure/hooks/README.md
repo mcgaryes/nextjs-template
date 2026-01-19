@@ -3,6 +3,88 @@
 Hooks are reusable functions that encapsulate stateful logic, data fetching, and side effects. They follow React's hooks
 pattern and provide a clean API for components to consume feature functionality.
 
+---
+
+## Hooks Own Business Logic
+
+**Hooks are the single source of truth for all business logic in a feature.** Components are presentational only—they receive data and callbacks from hooks via props.
+
+### What Hooks Own
+
+| Responsibility           | Description                                                     |
+|--------------------------|-----------------------------------------------------------------|
+| **Data Fetching**        | All API calls, SWR/React Query usage, and data retrieval        |
+| **State Management**     | Feature state, selections, pagination, filters                  |
+| **Data Transformations** | Mapping, filtering, sorting, and computing derived values       |
+| **Side Effects**         | API mutations, browser APIs, subscriptions                      |
+| **Action Callbacks**     | Functions passed to components for user interactions            |
+
+### What Components Receive
+
+Components receive everything they need via props from hooks:
+
+```typescript
+// Hook provides data and callbacks
+const { items, isLoading, error, selectedItem, onSelect, onClear } = useFeatureItems({ categoryId });
+
+// Component receives via props - no direct hook calls in view components
+<FeatureCardView
+  items={items}
+  selectedItem={selectedItem}
+  onSelect={onSelect}
+  onClear={onClear}
+/>
+```
+
+### Pattern: Hook + Presentational Component
+
+```typescript
+// hooks/use-feature-items.ts
+export function useFeatureItems(params: UseFeatureItemsParams): UseFeatureItemsReturnValue {
+  const { categoryId } = params;
+
+  // Data fetching
+  const { data, isLoading, error, mutate } = useSWR<Item[]>(
+    `/api/categories/${categoryId}/items`,
+    fetcher
+  );
+
+  // Memoized transformations
+  const items = useMemo(() => data ?? [], [data]);
+
+  // State management
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+  // Action callbacks for components
+  const onSelect = useCallback((item: Item) => {
+    setSelectedItem(item);
+  }, []);
+
+  const onClear = useCallback(() => {
+    setSelectedItem(null);
+  }, []);
+
+  return {
+    items,
+    isLoading,
+    error: error ?? null,
+    selectedItem,
+    onSelect,
+    onClear,
+    refresh: mutate,
+  };
+}
+```
+
+### Benefits
+
+- **Testability**: Hooks can be tested independently with mock data
+- **Reusability**: Same hook can power multiple presentational components
+- **Single Source of Truth**: Business logic is centralized, not scattered across components
+- **Clear Data Flow**: Props trace back to a single hook, making debugging easier
+
+---
+
 ## Directory Structure
 
 ```
@@ -336,13 +418,15 @@ describe("useItems", () => {
 
 ## Hook Categories
 
-| Category         | Purpose                            | Example                        |
-|------------------|------------------------------------|--------------------------------|
-| Data Fetching    | Fetch and transform API data       | useUsers, useProducts          |
-| State Management | Manage local/shared state          | useFormState, useSelection     |
-| Side Effects     | Handle browser APIs, subscriptions | useMediaRecorder, useWebSocket |
-| Utility          | Reusable logic                     | useDebounce, useLocalStorage   |
-| Context Consumer | Access context state               | useAuth, useTheme              |
+All hooks provide data and callbacks that components consume via props. Components never call these hooks directly in view components—only in main/orchestrator components.
+
+| Category         | Purpose                                | Provides to Components                     |
+|------------------|----------------------------------------|--------------------------------------------|
+| Data Fetching    | Fetch and transform API data           | `items`, `isLoading`, `error`, `refresh`   |
+| State Management | Manage local/shared state              | `selectedItem`, `onSelect`, `onClear`      |
+| Side Effects     | Handle browser APIs, subscriptions     | `isRecording`, `onStart`, `onStop`         |
+| Utility          | Reusable logic                         | `debouncedValue`, `storedValue`, `setValue`|
+| Context Consumer | Access context state                   | `user`, `theme`, `onLogout`                |
 
 ---
 
@@ -366,5 +450,8 @@ describe("useItems", () => {
 - Use useMemo for derived/transformed data
 - Support suspense mode for data fetching (if applicable)
 - Handle loading and error states
+- Provide action callbacks (e.g., `onSelect`, `onClear`) for component interactions
+- Use `useCallback` for all callback functions returned to components
+- Return all data needed by presentational components via the return value
 - Add unit tests with API mocking
 - Document complex logic with comments
