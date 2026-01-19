@@ -1,24 +1,20 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(find:*)",
-      "Bash(npx shadcn@latest add:*)",
-      "Bash(ls:*)",
-      "Bash(pnpm lint:*)",
-      "Bash(tree:*)"
-    ]
-  },
-  "hooks": {
-    "EventName": [
-      {
-        "matcher": "ToolPattern",
-        "hooks": [
-          {
-            "type": "after_write",
-            "command": "scripts/claude-hooks/prettier-after-change.sh"
-          }
+    "permissions": {
+        "allow": ["Bash(find:*)", "Bash(npx shadcn@latest add:*)", "Bash(ls:*)", "Bash(pnpm lint:*)", "Bash(tree:*)"]
+    },
+    "enabledMcpjsonServers": ["shadcn"],
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "scripts/claude-hooks/prettier-after-change.sh"
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  }
+    },
+    "enableAllProjectMcpServers": true
 }

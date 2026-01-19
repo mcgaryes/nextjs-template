@@ -26,7 +26,7 @@ feature-name/
 Not all features require every directory. Use only what's needed:
 
 | Feature Type                           | Typical Structure    |
-|:---------------------------------------|:---------------------|
+| :------------------------------------- | :------------------- |
 | Full-featured (campaign, integrations) | All four directories |
 | Data-focused (analytics)               | api/ + hooks/        |
 | UI-focused (badges)                    | components/ + hooks/ |
@@ -79,10 +79,10 @@ Each component exports via index.ts:
 
 ```typescript
 // components/feature-card/index.ts
-export {FeatureCard} from "./feature-card";
-export {FeatureCardLoading} from "./feature-card-loading";
-export {FeatureCardErrored} from "./feature-card-errored";
-export {FeatureCardEmpty} from "./feature-card-empty";
+export { FeatureCard } from './feature-card';
+export { FeatureCardLoading } from './feature-card-loading';
+export { FeatureCardErrored } from './feature-card-errored';
+export { FeatureCardEmpty } from './feature-card-empty';
 ```
 
 ---
@@ -113,7 +113,7 @@ export interface UseFeatureDataResult {
 }
 
 export function useFeatureData(params: UseFeatureDataParams): UseFeatureDataResult {
-// Implementation
+    // Implementation
 }
 ```
 
@@ -146,8 +146,8 @@ contexts/
 
 1. Separation of Concerns: Keep data logic in api/, UI in components/, state in contexts/
 2. Barrel Exports: Use index.ts files for clean import paths
-4. Consistent Naming: Follow kebab-case for files, PascalCase for components
-5. Co-located Tests: Place __tests__/ directories alongside the code they test
+3. Consistent Naming: Follow kebab-case for files, PascalCase for components
+4. Co-located Tests: Place **tests**/ directories alongside the code they test
 
 ---
 

@@ -63,13 +63,13 @@ Use `AskUserQuestion` with multi-select to ask:
 
 #### Required shadcn components by state file:
 
-| State File | Required shadcn Components |
-|------------|---------------------------|
+| State File | Required shadcn Components             |
+|------------|----------------------------------------|
 | Main       | `card` (Card, CardHeader, CardContent) |
-| Loading    | `skeleton` |
-| Empty      | `card` |
-| Errored    | `card`, `button` |
-| View       | `card` |
+| Loading    | `skeleton`                             |
+| Empty      | `card`                                 |
+| Errored    | `card`, `button`                       |
+| View       | `card`                                 |
 
 #### Check and install missing components:
 
