@@ -10,6 +10,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         return NextResponse.json(userProfile, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ message: 'User profile not found' }, { status: 404 });
+        return NextResponse.error();
     }
 }

@@ -4,7 +4,8 @@
       "Bash(find:*)",
       "Bash(npx shadcn@latest add:*)",
       "Bash(ls:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(tree:*)"
     ]
   },
   "hooks": {

@@ -25,8 +25,11 @@ function userEmailFromName(name: string) {
 }
 
 export async function getUserProfileInformation(userId: string) {
-
     await delay(Math.random() * 5000); // Simulate network delay
+
+    if (Math.random() > 0.5) {
+        throw new Error('Failed to fetch user profile information.');
+    }
 
     const userName = randomUserName();
     const userDescription = randomUserDescription();
