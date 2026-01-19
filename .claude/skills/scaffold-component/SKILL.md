@@ -57,7 +57,39 @@ Use `AskUserQuestion` with multi-select to ask:
 3. **Errored** - "Error state shown when data fetching fails"
 4. **View** - "Separate view component for presentation logic"
 
-### Step 5: Generate Component Files
+### Step 5: Ensure Required shadcn Components Exist
+
+**IMPORTANT:** All feature components MUST be built using shadcn/ui primitives.
+
+#### Required shadcn components by state file:
+
+| State File | Required shadcn Components |
+|------------|---------------------------|
+| Main       | `card` (Card, CardHeader, CardContent) |
+| Loading    | `skeleton` |
+| Empty      | `card` |
+| Errored    | `card`, `button` |
+| View       | `card` |
+
+#### Check and install missing components:
+
+1. Check which shadcn components exist in `components/ui/`
+2. For each missing required component, install it using the shadcn MCP server or CLI:
+   ```bash
+   npx shadcn@latest add <component-name> --yes
+   ```
+3. Common components to check: `card`, `skeleton`, `button`, `alert`
+
+#### Example installation check:
+```bash
+# Check if card exists
+ls components/ui/card.tsx
+
+# If not found, add it
+npx shadcn@latest add card --yes
+```
+
+### Step 6: Generate Component Files
 
 Create the component directory at `libs/features/{feature-name}/components/{component-name}/`.
 
@@ -66,6 +98,13 @@ Create the component directory at `libs/features/{feature-name}/components/{comp
 **{component-name}.tsx:**
 ```tsx
 import { type FC } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export interface {ComponentName}Props {
   // Add your props here
@@ -73,9 +112,15 @@ export interface {ComponentName}Props {
 
 export const {ComponentName}: FC<{ComponentName}Props> = (props) => {
   return (
-    <div>
-      {/* {ComponentName} component */}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{ComponentName}</CardTitle>
+        <CardDescription>Component description</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* {ComponentName} content */}
+      </CardContent>
+    </Card>
   );
 };
 ```
@@ -91,12 +136,21 @@ export type { {ComponentName}Props } from "./{component-name}";
 **{component-name}-loading.tsx** (if Loading selected):
 ```tsx
 import { type FC } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const {ComponentName}Loading: FC = () => {
   return (
-    <div className="animate-pulse">
-      {/* Loading skeleton */}
-    </div>
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-6 w-[200px]" />
+        <Skeleton className="h-4 w-[300px]" />
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-[80%]" />
+      </CardContent>
+    </Card>
   );
 };
 ```
@@ -104,6 +158,7 @@ export const {ComponentName}Loading: FC = () => {
 **{component-name}-empty.tsx** (if Empty selected):
 ```tsx
 import { type FC } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export interface {ComponentName}EmptyProps {
   message?: string;
@@ -113,9 +168,11 @@ export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = ({
   message = "No data available",
 }) => {
   return (
-    <div>
-      {message}
-    </div>
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center py-12">
+        <p className="text-muted-foreground text-center">{message}</p>
+      </CardContent>
+    </Card>
   );
 };
 ```
@@ -123,6 +180,8 @@ export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = ({
 **{component-name}-errored.tsx** (if Errored selected):
 ```tsx
 import { type FC } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export interface {ComponentName}ErroredProps {
   error?: Error | null;
@@ -134,14 +193,18 @@ export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = ({
   onRetry,
 }) => {
   return (
-    <div>
-      <p>Something went wrong{error?.message ? `: ${error.message}` : ""}</p>
-      {onRetry && (
-        <button onClick={onRetry} type="button">
-          Try again
-        </button>
-      )}
-    </div>
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center py-12 gap-4">
+        <p className="text-destructive text-center">
+          Something went wrong{error?.message ? `: ${error.message}` : ""}
+        </p>
+        {onRetry && (
+          <Button onClick={onRetry} variant="outline">
+            Try again
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 ```
@@ -149,6 +212,13 @@ export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = ({
 **{component-name}-view.tsx** (if View selected):
 ```tsx
 import { type FC } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { type {ComponentName}Props } from "./{component-name}";
 
 export interface {ComponentName}ViewProps extends {ComponentName}Props {
@@ -157,9 +227,15 @@ export interface {ComponentName}ViewProps extends {ComponentName}Props {
 
 export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props) => {
   return (
-    <div>
-      {/* Presentation markup */}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{ComponentName}</CardTitle>
+        <CardDescription>Component description</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* Presentation markup using shadcn components */}
+      </CardContent>
+    </Card>
   );
 };
 ```
@@ -182,7 +258,7 @@ export { {ComponentName}View } from "./{component-name}-view";
 export type { {ComponentName}ViewProps } from "./{component-name}-view";
 ```
 
-### Step 6: Output Summary
+### Step 7: Output Summary
 
 After creating all files, output a summary:
 

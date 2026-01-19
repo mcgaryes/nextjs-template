@@ -3,6 +3,62 @@
 Components are the UI building blocks within a feature. Each component is organized in its own directory with a
 consistent file structure that handles all UI states: loading, empty, error, and the main view.
 
+## shadcn/ui Requirement
+
+**All feature components MUST be built using shadcn/ui primitives.** Do not create custom implementations of common UI patterns when a shadcn component exists.
+
+### Rules
+
+1. **Always use shadcn components** for: buttons, cards, dialogs, forms, inputs, selects, tables, tooltips, etc.
+2. **Check existing components** in `components/ui/` before building
+3. **Add missing shadcn components** via the shadcn MCP server if needed:
+   - Use `npx shadcn@latest add <component-name>` or the shadcn MCP tools
+4. **Compose shadcn primitives** to build larger, feature-specific components
+5. **Never recreate** what shadcn already provides
+
+### Example: Building a Feature Card
+
+```tsx
+// ✅ CORRECT: Using shadcn primitives
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function FeatureCard({ title, children }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+}
+
+// ❌ WRONG: Custom implementation
+export function FeatureCard({ title, children }) {
+  return (
+    <div className="rounded-lg border p-4">
+      <h3 className="font-bold">{title}</h3>
+      <div>{children}</div>
+    </div>
+  );
+}
+```
+
+### Common shadcn Components
+
+| Use Case           | shadcn Component                    |
+|--------------------|-------------------------------------|
+| Clickable actions  | `Button`                            |
+| Content containers | `Card`, `CardHeader`, `CardContent` |
+| Loading states     | `Skeleton`                          |
+| User input         | `Input`, `Textarea`, `Select`       |
+| Overlays           | `Dialog`, `Sheet`, `Popover`        |
+| Feedback           | `Alert`, `Toast`                    |
+| Navigation         | `Tabs`, `NavigationMenu`            |
+| Data display       | `Table`, `Avatar`, `Badge`          |
+
 ## Directory Structure
 
 ```
@@ -41,7 +97,7 @@ Components follow a layered architecture that separates concerns:
 
 ## File Breakdown
 
-1. Main Component ({component-name}.tsx)
+### Main Component ({component-name}.tsx)
 
 The orchestrator that composes error handling, suspense, and the view.
 
@@ -76,21 +132,21 @@ export function FeatureCard(props: FeatureCardProps) {
 }
 ```
 
-### Responsibilities:
+#### Responsibilities:
 
 - Wrap with ErrorBoundary for runtime error handling
 - Wrap with Suspense for loading states
 - Apply container-level styling
 - Pass props to the view component
 
-### Server vs Client:
+#### Server vs Client:
 
 - Can be a Server Component (async) or Client Component
 - If async data fetching happens here, use async function
 
 ---
 
-2. View Component ({component-name}-view.tsx)
+### View Component ({component-name}-view.tsx)
 
 Contains the actual UI logic, data fetching, and user interactions.
 
@@ -143,7 +199,7 @@ export function FeatureCardView(props: FeatureCardViewProps) {
 }
 ```
 
-### Responsibilities:
+#### Responsibilities:
 
 - Fetch data using feature hooks
 - Manage local UI state (selections, pagination, etc.)
@@ -151,7 +207,7 @@ export function FeatureCardView(props: FeatureCardViewProps) {
 - Render empty state when no data
 - Contains the primary UI markup
 
-### Key patterns:
+#### Key patterns:
 
 - Mark as "use client" when using hooks or event handlers
 - Use useCallback for event handlers passed to children
@@ -159,7 +215,7 @@ export function FeatureCardView(props: FeatureCardViewProps) {
 
 ---
 
-3. Loading Component ({component-name}-loading.tsx)
+### Loading Component ({component-name}-loading.tsx)
 
 Skeleton UI that mirrors the structure of the loaded component.
 
@@ -194,7 +250,7 @@ export function FeatureCardLoading() {
 }
 ```
 
-### Guidelines:
+#### Guidelines:
 
 - Match the exact layout structure of the view component
 - Use animate-pulse for skeleton animations
@@ -204,7 +260,7 @@ export function FeatureCardLoading() {
 
 ---
 
-4. Empty Component ({component-name}-empty.tsx)
+### Empty Component ({component-name}-empty.tsx)
 
 Displayed when data exists but is empty.
 
@@ -221,7 +277,7 @@ export function FeatureCardEmpty() {
 }
 ```
 
-### Guidelines:
+#### Guidelines:
 
 - Provide helpful, friendly messaging
 - Optionally include an action (e.g., "Create your first item")
@@ -230,7 +286,7 @@ export function FeatureCardEmpty() {
 
   ---
 
-5. Error Component ({component-name}-errored.tsx)
+### Error Component ({component-name}-errored.tsx)
 
 Fallback UI when an error occurs.
 
@@ -247,7 +303,7 @@ export function FeatureCardErrored() {
 }
 ```
 
-### Guidelines:
+#### Guidelines:
 
 - Keep it simple—no complex logic
 - Optionally include a retry action
@@ -256,7 +312,7 @@ export function FeatureCardErrored() {
 
   ---
 
-6. Barrel Export (index.ts)
+## Barrel Export (index.ts)
 
 Export all public components from the directory.
 
@@ -271,7 +327,7 @@ Note: The view component is typically internal and not exported.
 
 ---
 
-### Props Interface Conventions
+#### Props Interface Conventions
 
 ```typescript
 // Main component props
