@@ -423,7 +423,7 @@ export interface ApiResponse<T = unknown> {
 
 ---
 
-##Checklist for New Model Files
+## Checklist for New Model Files
 
 - Use descriptive, consistent naming
 - Export all types that may be used externally
