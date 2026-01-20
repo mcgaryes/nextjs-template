@@ -373,9 +373,11 @@ Each file should define related types. Don't mix unrelated interfaces.
 2. Export Everything
 
 Export all types that might be needed elsewhere:
+```typescript
 export interface User { ... }
 export enum UserRole { ... }
 export const DEFAULT_USER: User = { ... };
+```
 
 3. Document Complex Types
 
