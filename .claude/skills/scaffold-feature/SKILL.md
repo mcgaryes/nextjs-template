@@ -1,3 +1,8 @@
+---
+name: Scaffold Feature
+description: Scaffold a new feature module with the standard directory structure and optional API, components, hooks, and context boilerplate.
+---
+
 # Scaffold Feature
 
 Scaffold a new feature module with the standard directory structure and boilerplate files.
