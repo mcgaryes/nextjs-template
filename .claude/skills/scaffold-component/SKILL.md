@@ -1,3 +1,8 @@
+---
+name: Scaffold Component
+description: Scaffold a new presentational (dumb) component inside an existing feature module, with optional state variants, using shadcn/ui primitives.
+---
+
 # Scaffold Component
 
 Scaffold a new component within an existing feature module.
