@@ -1,5 +1,5 @@
 ---
-name: Scaffold Hook
+name: scaffold-hook
 description: Scaffold a new custom React hook inside an existing feature module, with templates for data fetching, state management, or utility hooks, and update the feature hooks barrel export.
 ---
 

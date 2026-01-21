@@ -1,5 +1,5 @@
 ---
-name: Scaffold Context
+name: scaffold-context
 description: Scaffold a new React Context module inside an existing feature using the Context + useReducer pattern (state, actions, reducer, context, provider, and barrel exports).
 ---
 
