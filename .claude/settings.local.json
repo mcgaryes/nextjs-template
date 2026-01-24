@@ -5,7 +5,8 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(ls:*)",
       "Bash(pnpm lint:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Skill(scaffold-feature)"
     ]
   },
   "enableAllProjectMcpServers": true,
