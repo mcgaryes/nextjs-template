@@ -30,6 +30,7 @@ What is the name of the component? (use kebab-case, e.g., user-profile-card)
 ### Step 2: Validate Component Name
 
 Ensure the component name:
+
 - Uses kebab-case (lowercase letters and hyphens only)
 - Does not start or end with a hyphen
 - Is not empty
@@ -57,6 +58,7 @@ Use `AskUserQuestion` with multi-select to ask:
 **Question:** "Which state files should be included?"
 **Header:** "States"
 **Options:**
+
 1. **Loading** - "Skeleton/loading state shown while data is being fetched"
 2. **Empty** - "Empty state shown when there is no data to display"
 3. **Errored** - "Error state shown when data fetching fails"
@@ -68,24 +70,22 @@ Use `AskUserQuestion` with multi-select to ask:
 
 #### Required shadcn components by state file:
 
-| State File | Required shadcn Components             |
-|------------|----------------------------------------|
-| Main       | `card` (Card, CardHeader, CardContent) |
-| Loading    | `skeleton`                             |
-| Empty      | `card`                                 |
-| Errored    | `card`, `button`                       |
-| View       | `card`                                 |
+| State File | Required shadcn Components |
+|------------|----------------------------|
+| Loading    | `skeleton`                 |
+| Errored    | `button`                   |
 
 #### Check and install missing components:
 
 1. Check which shadcn components exist in `components/ui/`
 2. For each missing required component, install it using the shadcn MCP server or CLI:
-   ```bash
-   npx shadcn@latest add <component-name> --yes
-   ```
+    ```bash
+    npx shadcn@latest add <component-name> --yes
+    ```
 3. Common components to check: `card`, `skeleton`, `button`, `alert`
 
 #### Example installation check:
+
 ```bash
 # Check if card exists
 ls components/ui/card.tsx
@@ -101,7 +101,8 @@ Create the component directory at `lib/features/{feature-name}/components/{compo
 #### Always create these files:
 
 **{component-name}.tsx:**
-```tsx
+
+```
 import { type FC } from "react";
 import {
   Card,
@@ -115,7 +116,7 @@ export interface {ComponentName}Props {
   // Add your props here
 }
 
-export const {ComponentName}: FC<{ComponentName}Props> = (props: {ComponentName}Props) => {
+export function {ComponentName}(props: {ComponentName}Props) {
   const {} = props;
 
   return (
@@ -133,7 +134,8 @@ export const {ComponentName}: FC<{ComponentName}Props> = (props: {ComponentName}
 ```
 
 **index.ts:**
-```typescript
+
+```
 export { {ComponentName} } from "./{component-name}";
 export type { {ComponentName}Props } from "./{component-name}";
 ```
@@ -141,12 +143,13 @@ export type { {ComponentName}Props } from "./{component-name}";
 #### Conditionally create state files:
 
 **{component-name}-loading.tsx** (if Loading selected):
-```tsx
+
+```
 import { type FC } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const {ComponentName}Loading: FC = () => {
+export function {ComponentName}Loading() {
   return (
     <Card>
       <CardHeader>
@@ -163,7 +166,8 @@ export const {ComponentName}Loading: FC = () => {
 ```
 
 **{component-name}-empty.tsx** (if Empty selected):
-```tsx
+
+```
 import { type FC } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -185,7 +189,8 @@ export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = (props: {Comp
 ```
 
 **{component-name}-errored.tsx** (if Errored selected):
-```tsx
+
+```
 import { type FC } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -195,7 +200,7 @@ export interface {ComponentName}ErroredProps {
   onRetry?: () => void;
 }
 
-export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = (props: {ComponentName}ErroredProps) => {
+export function {ComponentName}Errored(props: {ComponentName}ErroredProps) {
   const { error, onRetry } = props;
 
   return (
@@ -216,7 +221,8 @@ export const {ComponentName}Errored: FC<{ComponentName}ErroredProps> = (props: {
 ```
 
 **{component-name}-view.tsx** (if View selected):
-```tsx
+
+```
 "use client";
 
 import { type FC } from "react";
@@ -238,7 +244,7 @@ export interface {ComponentName}ViewProps {
   onSelect?: (item: unknown) => void;
 }
 
-export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props: {ComponentName}ViewProps) => {
+export function {ComponentName}View(props: {ComponentName}ViewProps) {
   const { items, onSelect } = props;
 
   // UI-only local state is allowed (hover, focus, dropdown visibility)
@@ -272,7 +278,7 @@ export const {ComponentName}View: FC<{ComponentName}ViewProps> = (props: {Compon
 
 Add exports for all created state files to `index.ts`:
 
-```typescript
+```
 export { {ComponentName} } from "./{component-name}";
 export type { {ComponentName}Props } from "./{component-name}";
 
@@ -317,6 +323,7 @@ Adjust the tree output based on which files were actually created.
 - **ComponentName**: PascalCase (e.g., `UserProfileCard`)
 
 Convert kebab-case to PascalCase by:
+
 1. Splitting on hyphens
 2. Capitalizing the first letter of each word
 3. Joining without separators
@@ -339,39 +346,31 @@ Example: `user-profile-card` → `UserProfileCard`
 ### Allowed Hooks in Components
 
 View components may only use hooks for **UI-only state**:
+
 - `useState` for local visual state (dropdown open/closed, hover, focus)
 - `useRef` for DOM references
 - `useCallback`/`useMemo` for UI performance optimization
 
 ### When to Create a Companion Hook
 
-If the component needs business logic (data fetching, state management, API calls), create a companion hook in the feature's `hooks/` directory:
+If the component needs business logic (data fetching, state management, API calls), create a companion hook in the feature's `hooks/` directory. Hooks
+should be task specific. Dont overload hooks with unrelated logic.
 
 ```
 lib/features/{feature-name}/
 ├── components/{component-name}/
-│   ├── {component-name}.tsx          # Calls the hook, passes data to view
-│   └── {component-name}-view.tsx     # Presentational only
+│   └── {component-name}.tsx          # Makes use of the hook
 └── hooks/
-    └── use-{component-name}.ts       # Business logic
+    └── use-{hook}.ts                 # Business logic
 ```
 
 ### Example Pattern
 
-```tsx
+```
 // Main component calls hook and passes data to view
-export const FeatureCard: FC<FeatureCardProps> = (props: FeatureCardProps) => {
+export function FeatureCard(props: FeatureCardProps) {
   const { itemId } = props;
-  const { items, onSelect } = useFeatureCard({ itemId });
+  const { items, onSelect } = use {hook}({ itemId });
   return <FeatureCardView items={items} onSelect={onSelect} />;
-};
-
-// View is presentational only - receives everything via props
-export const FeatureCardView: FC<FeatureCardViewProps> = (props: FeatureCardViewProps) => {
-  const { items, onSelect } = props;
-
-  // UI-only state is allowed
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  return (/* render items */);
 };
 ```

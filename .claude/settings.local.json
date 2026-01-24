@@ -1,7 +1,15 @@
 {
-    "permissions": {
-        "allow": ["Bash(find:*)", "Bash(npx shadcn@latest add:*)", "Bash(ls:*)", "Bash(pnpm lint:*)", "Bash(tree:*)"]
-    },
-    "enabledMcpjsonServers": ["shadcn"],
-    "enableAllProjectMcpServers": true
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(ls:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(tree:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
