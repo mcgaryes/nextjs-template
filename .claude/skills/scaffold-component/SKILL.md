@@ -39,7 +39,7 @@ If invalid, inform the user and ask for a valid name.
 
 ### Step 3: Select Target Feature
 
-List all existing features by scanning `lib/features/` directory.
+List all existing features by scanning `features/` directory.
 
 If no features exist, inform the user they need to create a feature first using `/scaffold-feature`.
 
@@ -96,7 +96,7 @@ npx shadcn@latest add card --yes
 
 ### Step 6: Generate Component Files
 
-Create the component directory at `lib/features/{feature-name}/components/{component-name}/`.
+Create the component directory at `features/{feature-name}/components/{component-name}/`.
 
 #### Always create these files:
 
@@ -299,7 +299,7 @@ After creating all files, output a summary:
 ```
 Created component: {component-name} in {feature-name}
 
-lib/features/{feature-name}/components/{component-name}/
+features/{feature-name}/components/{component-name}/
 ├── {component-name}.tsx
 ├── {component-name}-loading.tsx
 ├── {component-name}-empty.tsx
@@ -311,7 +311,7 @@ Next steps:
 1. Define your component props in {component-name}.tsx
 2. Implement the component UI using shadcn components
 3. If this component needs data fetching, create a companion hook at:
-   lib/features/{feature-name}/hooks/use-{component-name}.ts
+   features/{feature-name}/hooks/use-{component-name}.ts
 4. Remember: View components are presentational only - pass all data via props
 ```
 
@@ -357,7 +357,7 @@ If the component needs business logic (data fetching, state management, API call
 should be task specific. Dont overload hooks with unrelated logic.
 
 ```
-lib/features/{feature-name}/
+features/{feature-name}/
 ├── components/{component-name}/
 │   └── {component-name}.tsx          # Makes use of the hook
 └── hooks/

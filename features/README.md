@@ -153,7 +153,7 @@ contexts/
 
 ## Creating a New Feature
 
-1. Create a new directory under src/lib/features/
+1. Create a new directory under features/
 2. Add the directories you need (api/, components/, hooks/, contexts/)
 3. Follow the patterns established in existing features
 4. Export public APIs via barrel exports

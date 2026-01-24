@@ -38,7 +38,7 @@ If invalid, inform the user and ask for a valid name.
 
 ### Step 3: Select Target Feature
 
-List all existing features by scanning `lib/features/` directory.
+List all existing features by scanning `features/` directory.
 
 If no features exist, inform the user they need to create a feature first using `/scaffold-feature`.
 
@@ -63,11 +63,11 @@ Use `AskUserQuestion` to ask which type of hook to create:
 
 ### Step 5: Ensure hooks Directory Exists
 
-Check if `lib/features/{feature-name}/hooks/` directory exists. If not, create it.
+Check if `features/{feature-name}/hooks/` directory exists. If not, create it.
 
 ### Step 6: Generate Hook File
 
-Create the hook file at `lib/features/{feature-name}/hooks/use-{hook-name}.ts`.
+Create the hook file at `features/{feature-name}/hooks/use-{hook-name}.ts`.
 
 Use the appropriate template based on the selected category:
 
@@ -185,7 +185,7 @@ export function use{HookName}(
 
 ### Step 7: Update Feature Index
 
-Check if `lib/features/{feature-name}/hooks/index.ts` exists.
+Check if `features/{feature-name}/hooks/index.ts` exists.
 
 **If it exists**, append the new export:
 
@@ -225,7 +225,7 @@ After creating all files, output a summary:
 ```
 Created hook: use-{hook-name} in {feature-name}
 
-lib/features/{feature-name}/hooks/
+features/{feature-name}/hooks/
 ├── use-{hook-name}.ts
 └── index.ts
 

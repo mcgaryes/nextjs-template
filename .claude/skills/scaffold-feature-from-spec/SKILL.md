@@ -31,7 +31,7 @@ Procedure (must follow exactly):
 7) Wire feature into app root so it persists through navigation:
     - detect root entry file and modify it
 8) Finalize:
-    - ensure exports in src/features/{feature}/index.ts
+    - ensure exports in features/{feature}/index.ts
     - print list of created/modified files
     - include a minimal usage snippet
 

@@ -59,7 +59,7 @@ Use `AskUserQuestion` with multi-select to ask two questions (API layer and UI l
 
 ### Step 4: Generate Directory Structure
 
-Create the feature directory at `lib/features/{feature-name}/`.
+Create the feature directory at `features/{feature-name}/`.
 
 For each selected module, create the appropriate subdirectories and files:
 
@@ -163,7 +163,7 @@ After creating all files, output a summary:
 ```
 Created feature: {feature-name}
 
-lib/features/{feature-name}/
+features/{feature-name}/
 ├── api/
 │   ├── logic/
 │   │   └── index.ts

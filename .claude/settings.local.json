@@ -6,7 +6,10 @@
       "Bash(ls:*)",
       "Bash(pnpm lint:*)",
       "Bash(tree:*)",
-      "Skill(scaffold-feature)"
+      "Skill(scaffold-feature)",
+      "mcp__shadcn__view_items_in_registries",
+      "mcp__shadcn__get_add_command_for_items",
+      "Bash(pnpm dlx:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
