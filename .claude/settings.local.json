@@ -9,7 +9,9 @@
       "Skill(scaffold-feature)",
       "mcp__shadcn__view_items_in_registries",
       "mcp__shadcn__get_add_command_for_items",
-      "Bash(pnpm dlx:*)"
+      "Bash(pnpm dlx:*)",
+      "Bash(pnpm build:*)",
+      "mcp__shadcn__get_audit_checklist"
     ]
   },
   "enableAllProjectMcpServers": true,
