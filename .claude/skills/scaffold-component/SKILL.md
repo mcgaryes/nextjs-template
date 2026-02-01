@@ -17,6 +17,30 @@ after: ./scripts/after-scaffold-component.sh features/<feature>/components/<comp
 - Components scaffolded by this Skill are presentational: render UI from props and may use UI-only local state.
 - Do not add data-fetching hooks (`useQuery`, `useSWR`, etc.) inside presentational components.
 
+## Server action colocation
+
+**Prefer colocating server actions with the server component that uses them.** Define `getData` and other server actions directly in the `-server.tsx` file rather than passing them as props.
+
+### When to colocate (default)
+
+Keep server actions in the `-server.tsx` file when:
+- The action is specific to this component
+- The data fetching logic is straightforward
+- The component is the only consumer of the action
+
+### When to extract
+
+Move server actions elsewhere when:
+- **Shared across components**: Multiple components need the same data-fetching logic
+- **Complex business logic**: The action involves significant business rules that belong in `features/<feature>/api/logic/`
+- **Reusable mutations**: Form submissions or mutations used by multiple components
+- **Testing requirements**: The logic needs isolated unit testing
+
+### Placement when extracted
+
+- **Feature-specific**: `features/<feature>/api/logic/{action-name}.ts`
+- **Shared across features**: `lib/actions/{action-name}.ts`
+
 ## shadcn-first approach
 
 **Always use shadcn/ui primitives** for common UI patterns. Do not use raw HTML elements or custom styles when a shadcn primitive exists.

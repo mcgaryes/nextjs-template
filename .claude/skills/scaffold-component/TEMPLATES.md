@@ -357,14 +357,51 @@ export function {ComponentName}View(props: {ComponentName}ViewProps) {
 
 Async server component wrapper for Next.js App Router Suspense streaming pattern. Data fetching happens server-side without blocking page render.
 
+**Prefer colocating the server action** in this file unless it's shared across components or involves complex business logic.
+
+### With colocated server action (default)
+
 ```tsx
 import { Suspense } from 'react';
 
-import { {ComponentName} } from './{component-name}';
+import { {ComponentName}, type {ComponentName}Props } from './{component-name}';
+import { {ComponentName}Loading } from './{component-name}-loading';
+
+async function getData(): Promise<{ComponentName}Props> {
+  // Fetch data from API, database, or external service
+  // Example: const data = await db.query(...);
+  return {
+    // Return props matching {ComponentName}Props
+  };
+}
+
+async function {ComponentName}Async() {
+  const data = await getData();
+
+  return <{ComponentName} {...data} />;
+}
+
+export function {ComponentName}Server() {
+  return (
+    <Suspense fallback={<{ComponentName}Loading />}>
+      <{ComponentName}Async />
+    </Suspense>
+  );
+}
+```
+
+### With extracted server action (when shared/complex)
+
+Use this pattern when the server action is reused across components or lives in `features/<feature>/api/logic/`.
+
+```tsx
+import { Suspense } from 'react';
+
+import { {ComponentName}, type {ComponentName}Props } from './{component-name}';
 import { {ComponentName}Loading } from './{component-name}-loading';
 
 interface {ComponentName}ServerProps {
-  getData: () => Promise<Record<string, unknown>>;
+  getData: () => Promise<{ComponentName}Props>;
 }
 
 async function {ComponentName}Async(props: {ComponentName}ServerProps) {

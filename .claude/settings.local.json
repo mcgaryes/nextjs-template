@@ -17,7 +17,9 @@
       "Bash(done)",
       "Bash(chmod:*)",
       "Bash(./scripts/after-scaffold-component.sh:*)",
-      "mcp__shadcn__search_items_in_registries"
+      "mcp__shadcn__search_items_in_registries",
+      "mcp__ide__getDiagnostics",
+      "Bash(pnpm exec tsc:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
