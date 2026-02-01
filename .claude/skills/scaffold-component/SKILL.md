@@ -1,376 +1,110 @@
 ---
 name: scaffold-component
-description: Scaffold a new presentational (dumb) component inside an existing feature module, with optional state variants, using shadcn/ui primitives.
+description: Scaffolds a presentational React component in an existing feature module at features/<feature>/components/<component>/. Optionally generates state variants (loading, empty, errored, view). Uses shadcn/ui primitives when requested, but does not require any specific primitive by default.
 ---
 
 # Scaffold Component
 
-Scaffold a new component within an existing feature module.
+## Scope and terminology
 
-## Usage
+- Feature module: `features/<feature>/`
+- Component directory: `features/<feature>/components/<component>/`
+- State variants: `loading`, `empty`, `errored`, `view`
 
-```
-/scaffold-component <component-name>
-```
+## Guardrails
 
-Example: `/scaffold-component user-profile-card`
+- Components scaffolded by this Skill are presentational: render UI from props and may use UI-only local state.
+- Do not add data-fetching hooks (`useQuery`, `useSWR`, etc.) inside presentational components.
 
-## Instructions
+## Dependencies (do not assume installed)
 
-Follow these steps to scaffold a new component:
+If the user request implies specific shadcn/ui primitives (e.g., “wrap in Card”, “use Skeleton”, “use Button”), install them via:
+- `npx shadcn@latest add <component> --yes`
 
-### Step 1: Parse Component Name
+Do not install primitives that are not explicitly needed.
 
-The component name is provided in `$ARGUMENTS`. If `$ARGUMENTS` is empty or missing, use `AskUserQuestion` to prompt:
+## Workflow checklist
+1. Collect inputs (component name, feature, variants)
+2. Validate component name (kebab-case)
+3. Resolve target feature module under features/ 
+4. Select state variants 
+5. Determine any explicitly requested shadcn/ui primitives 
+6. Verify/install only the requested primitives (if needed)
+7. Create component directory and files from templates 
+8. Update index.ts exports 
+9. Verify files exist and summarize outputs
 
-```
-What is the name of the component? (use kebab-case, e.g., user-profile-card)
-```
+### 1. Collect inputs
 
-### Step 2: Validate Component Name
+- Component name comes from `$ARGUMENTS` (kebab-case).
+- If missing, prompt for a kebab-case name (example: `user-profile-card`).
 
-Ensure the component name:
+### 2. Validate component name
 
-- Uses kebab-case (lowercase letters and hyphens only)
-- Does not start or end with a hyphen
-- Is not empty
+Accept only:
+- lowercase letters and hyphens
+- not starting/ending with `-`
+- not empty
 
-If invalid, inform the user and ask for a valid name.
+If invalid, explain why and re-prompt.
 
-### Step 3: Select Target Feature
+### 3. Resolve target feature module (`features/`)
 
-List all existing features by scanning `features/` directory.
+- List directories under `features/`.
+- If none: direct the user to create a feature module first.
+- If one: confirm it is the target.
+- If multiple: ask which feature module to use.
 
-If no features exist, inform the user they need to create a feature first using `/scaffold-feature`.
+### 4. Select state variants
 
-If only one feature exists, confirm with the user that they want to add the component to that feature.
+Offer:
+- `loading`
+- `empty`
+- `errored`
+- `view`
 
-If multiple features exist, use `AskUserQuestion` to ask which feature to add the component to:
+### 5. Determine explicitly requested shadcn/ui primitives
 
-**Question:** "Which feature should this component belong to?"
-**Header:** "Feature"
-**Options:** List existing feature names (up to 4). If more than 4 features exist, show the 4 most recently modified and include guidance to specify "Other" for unlisted features.
+Only consider primitives “required” if the user request explicitly asks for them.
 
-### Step 4: Ask Which State Files to Include
+Examples:
+- “Wrap in Card” → `card`
+- “Use Skeleton for loading” → `skeleton`
+- “Add a Retry Button” → `button`
 
-Use `AskUserQuestion` with multi-select to ask:
+### 6. Verify/install only the requested primitives
 
-**Question:** "Which state files should be included?"
-**Header:** "States"
-**Options:**
+If the shadcn MCP server is available and shows Connected in /mcp, use it to install requested primitives (card/skeleton/button) directly. Otherwise, install `via npx shadcn@latest add <primitive> --yes`.
 
-1. **Loading** - "Skeleton/loading state shown while data is being fetched"
-2. **Empty** - "Empty state shown when there is no data to display"
-3. **Errored** - "Error state shown when data fetching fails"
-4. **View** - "Separate view component for presentation logic"
+### 7. Generate files from templates
 
-### Step 5: Ensure Required shadcn Components Exist
+Create directory:
+`features/<feature>/components/<component>/`
 
-**IMPORTANT:** All feature components MUST be built using shadcn/ui primitives.
+Always create:
+- `<component>.tsx`
+- `index.ts`
 
-#### Required shadcn components by state file:
+Conditionally create:
+- `<component>-loading.tsx`
+- `<component>-empty.tsx`
+- `<component>-errored.tsx`
+- `<component>-view.tsx`
 
-| State File | Required shadcn Components |
-|------------|----------------------------|
-| Loading    | `skeleton`                 |
-| Errored    | `button`                   |
+Templates live in: [TEMPLATES.md](TEMPLATES.md)
 
-#### Check and install missing components:
+### 8. Update exports (`index.ts`)
 
-1. Check which shadcn components exist in `components/ui/`
-2. For each missing required component, install it using the shadcn MCP server or CLI:
-    ```bash
-    npx shadcn@latest add <component-name> --yes
-    ```
-3. Common components to check: `card`, `skeleton`, `button`, `alert`
+Export:
+- base component + props
+- each generated variant + props (where applicable)
 
-#### Example installation check:
+### 9. Verify and summarize
 
-```bash
-# Check if card exists
-ls components/ui/card.tsx
+- Verify expected files exist.
+- Print a tree of created files + next steps.
 
-# If not found, add it
-npx shadcn@latest add card --yes
-```
+## Reference material
 
-### Step 6: Generate Component Files
-
-Create the component directory at `features/{feature-name}/components/{component-name}/`.
-
-#### Always create these files:
-
-**{component-name}.tsx:**
-
-```
-import { type FC } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-export interface {ComponentName}Props {
-  // Add your props here
-}
-
-export function {ComponentName}(props: {ComponentName}Props) {
-  const {} = props;
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{ComponentName}</CardTitle>
-        <CardDescription>Component description</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* {ComponentName} content */}
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-**index.ts:**
-
-```
-export { {ComponentName} } from "./{component-name}";
-export type { {ComponentName}Props } from "./{component-name}";
-```
-
-#### Conditionally create state files:
-
-**{component-name}-loading.tsx** (if Loading selected):
-
-```
-import { type FC } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-
-export function {ComponentName}Loading() {
-  return (
-    <Card>
-      <CardHeader>
-        <Skeleton className="h-6 w-[200px]" />
-        <Skeleton className="h-4 w-[300px]" />
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-[80%]" />
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-**{component-name}-empty.tsx** (if Empty selected):
-
-```
-import { type FC } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-
-export interface {ComponentName}EmptyProps {
-  message?: string;
-}
-
-export const {ComponentName}Empty: FC<{ComponentName}EmptyProps> = (props: {ComponentName}EmptyProps) => {
-  const { message = "No data available" } = props;
-
-  return (
-    <Card>
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        <p className="text-muted-foreground text-center">{message}</p>
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-**{component-name}-errored.tsx** (if Errored selected):
-
-```
-import { type FC } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-export interface {ComponentName}ErroredProps {
-  error?: Error | null;
-  onRetry?: () => void;
-}
-
-export function {ComponentName}Errored(props: {ComponentName}ErroredProps) {
-  const { error, onRetry } = props;
-
-  return (
-    <Card>
-      <CardContent className="flex flex-col items-center justify-center py-12 gap-4">
-        <p className="text-destructive text-center">
-          Something went wrong{error?.message ? `: ${error.message}` : ""}
-        </p>
-        {onRetry && (
-          <Button onClick={onRetry} variant="outline">
-            Try again
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-**{component-name}-view.tsx** (if View selected):
-
-```
-"use client";
-
-import { type FC } from "react";
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-// Presentational component - receives all data and callbacks via props
-// No data-fetching hooks allowed here
-export interface {ComponentName}ViewProps {
-  // Data props (passed from main component)
-  items: unknown[];
-  // Callback props (passed from main component)
-  onSelect?: (item: unknown) => void;
-}
-
-export function {ComponentName}View(props: {ComponentName}ViewProps) {
-  const { items, onSelect } = props;
-
-  // UI-only local state is allowed (hover, focus, dropdown visibility)
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{ComponentName}</CardTitle>
-        <CardDescription>Component description</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Presentation markup - render data from props */}
-        {items.map((item, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            onClick={() => onSelect?.(item)}
-          >
-            {/* Render item */}
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-#### Update index.ts exports
-
-Add exports for all created state files to `index.ts`:
-
-```
-export { {ComponentName} } from "./{component-name}";
-export type { {ComponentName}Props } from "./{component-name}";
-
-// Add these based on selected states:
-export { {ComponentName}Loading } from "./{component-name}-loading";
-export { {ComponentName}Empty } from "./{component-name}-empty";
-export type { {ComponentName}EmptyProps } from "./{component-name}-empty";
-export { {ComponentName}Errored } from "./{component-name}-errored";
-export type { {ComponentName}ErroredProps } from "./{component-name}-errored";
-export { {ComponentName}View } from "./{component-name}-view";
-export type { {ComponentName}ViewProps } from "./{component-name}-view";
-```
-
-### Step 7: Output Summary
-
-After creating all files, output a summary:
-
-```
-Created component: {component-name} in {feature-name}
-
-features/{feature-name}/components/{component-name}/
-├── {component-name}.tsx
-├── {component-name}-loading.tsx
-├── {component-name}-empty.tsx
-├── {component-name}-errored.tsx
-├── {component-name}-view.tsx
-└── index.ts
-
-Next steps:
-1. Define your component props in {component-name}.tsx
-2. Implement the component UI using shadcn components
-3. If this component needs data fetching, create a companion hook at:
-   features/{feature-name}/hooks/use-{component-name}.ts
-4. Remember: View components are presentational only - pass all data via props
-```
-
-Adjust the tree output based on which files were actually created.
-
-## Naming Conventions
-
-- **component-name**: kebab-case (e.g., `user-profile-card`)
-- **ComponentName**: PascalCase (e.g., `UserProfileCard`)
-
-Convert kebab-case to PascalCase by:
-
-1. Splitting on hyphens
-2. Capitalizing the first letter of each word
-3. Joining without separators
-
-Example: `user-profile-card` → `UserProfileCard`
-
----
-
-## Dumb Component Pattern
-
-**All scaffolded components must follow the "dumb component" (presentational) pattern.**
-
-### Core Principles
-
-1. **Components are presentational only** - They render UI based on props
-2. **All data comes via props** - Data, callbacks, and state are passed down
-3. **No data-fetching hooks in components** - No `useSWR`, `useQuery`, or custom data hooks inside view components
-4. **Business logic lives in hooks** - Create a companion hook if the component needs data fetching
-
-### Allowed Hooks in Components
-
-View components may only use hooks for **UI-only state**:
-
-- `useState` for local visual state (dropdown open/closed, hover, focus)
-- `useRef` for DOM references
-- `useCallback`/`useMemo` for UI performance optimization
-
-### When to Create a Companion Hook
-
-If the component needs business logic (data fetching, state management, API calls), create a companion hook in the feature's `hooks/` directory. Hooks
-should be task specific. Dont overload hooks with unrelated logic.
-
-```
-features/{feature-name}/
-├── components/{component-name}/
-│   └── {component-name}.tsx          # Makes use of the hook
-└── hooks/
-    └── use-{hook}.ts                 # Business logic
-```
-
-### Example Pattern
-
-```
-// Main component calls hook and passes data to view
-export function FeatureCard(props: FeatureCardProps) {
-  const { itemId } = props;
-  const { items, onSelect } = use {hook}({ itemId });
-  return <FeatureCardView items={items} onSelect={onSelect} />;
-};
-```
+- Templates: [TEMPLATES.md](TEMPLATES.md)
+- Examples: [EXAMPLES.md](EXAMPLES.md)

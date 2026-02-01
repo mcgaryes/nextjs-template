@@ -12,7 +12,9 @@
       "Bash(pnpm dlx:*)",
       "Bash(pnpm build:*)",
       "mcp__shadcn__get_audit_checklist",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(while read f)",
+      "Bash(done)"
     ]
   },
   "enableAllProjectMcpServers": true,
