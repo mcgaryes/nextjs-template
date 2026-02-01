@@ -14,7 +14,9 @@
       "mcp__shadcn__get_audit_checklist",
       "Bash(grep:*)",
       "Bash(while read f)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(chmod:*)",
+      "Bash(./scripts/after-scaffold-component.sh:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -8,7 +8,7 @@
         "build:analyze": "ANALYZE=true next build",
         "start": "next start",
         "lint": "eslint",
-        "format": "prettier --write \"app/**/*.ts*\" \"lib/**/*.ts*\""
+        "format": "prettier --write \"app/**/*.ts*\" \"lib/**/*.ts*\" \"features/**/*.ts*\""
     },
     "dependencies": {
         "@radix-ui/react-alert-dialog": "^1.1.15",

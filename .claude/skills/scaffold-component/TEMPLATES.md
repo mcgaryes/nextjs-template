@@ -43,6 +43,7 @@ export { {ComponentName}Loading } from "./{component-name}-loading";
 export { {ComponentName}Empty } from "./{component-name}-empty";
 export { {ComponentName}Errored } from "./{component-name}-errored";
 export { {ComponentName}View } from "./{component-name}-view";
+export { {ComponentName}Server } from "./{component-name}-server";
 ```
 
 ---
@@ -154,6 +155,39 @@ export function {ComponentName}View(props: {ComponentName}ViewProps) {
         </div>
       ))}
     </div>
+  );
+}
+```
+
+---
+
+## Server: `{component-name}-server.tsx`
+
+Async server component wrapper for Next.js App Router Suspense streaming pattern. Data fetching happens server-side without blocking page render.
+
+```tsx
+import { Suspense } from "react";
+
+import { {ComponentName} } from "./{component-name}";
+import { {ComponentName}Loading } from "./{component-name}-loading";
+
+interface {ComponentName}ServerProps {
+  // Props for data fetching configuration
+}
+
+// TODO: Replace with actual data fetching logic
+async function getData() {
+  // Example: const data = await fetch(...).then(res => res.json());
+  return {};
+}
+
+export async function {ComponentName}Server(props: {ComponentName}ServerProps) {
+  const data = await getData();
+
+  return (
+    <Suspense fallback={<{ComponentName}Loading />}>
+      <{ComponentName} {...data} />
+    </Suspense>
   );
 }
 ```

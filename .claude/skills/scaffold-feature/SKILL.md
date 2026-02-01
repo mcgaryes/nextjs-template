@@ -1,6 +1,7 @@
 ---
 name: scaffold-feature
 description: Scaffold a new feature module with the standard directory structure and optional API, components, hooks, and context boilerplate.
+after: ./scripts/after-scaffold-feature.sh features/<feature>
 ---
 
 # Scaffold Feature
