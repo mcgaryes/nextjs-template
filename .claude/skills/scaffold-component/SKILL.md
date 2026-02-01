@@ -1,6 +1,6 @@
 ---
 name: scaffold-component
-description: Scaffolds a presentational React component in an existing feature module at features/<feature>/components/<component>/. Optionally generates state variants (loading, empty, errored, view). Uses shadcn/ui primitives when requested, but does not require any specific primitive by default.
+description: Scaffolds a presentational React component in an existing feature module at features/<feature>/components/<component>/. Optionally generates state variants (loading, empty, errored, view). Uses shadcn/ui primitives by default for common UI patterns.
 after: ./scripts/after-scaffold-component.sh features/<feature>/components/<component>
 ---
 
@@ -17,20 +17,51 @@ after: ./scripts/after-scaffold-component.sh features/<feature>/components/<comp
 - Components scaffolded by this Skill are presentational: render UI from props and may use UI-only local state.
 - Do not add data-fetching hooks (`useQuery`, `useSWR`, etc.) inside presentational components.
 
-## Dependencies (do not assume installed)
+## shadcn-first approach
 
-If the user request implies specific shadcn/ui primitives (e.g., “wrap in Card”, “use Skeleton”, “use Button”), install them via:
-- `npx shadcn@latest add <component> --yes`
+**Always use shadcn/ui primitives** for common UI patterns. Do not use raw HTML elements or custom styles when a shadcn primitive exists.
 
-Do not install primitives that are not explicitly needed.
+### Auto-inferred primitives
+
+Automatically install and use these primitives based on component semantics:
+
+| Pattern | Primitive | Trigger keywords/patterns |
+|---------|-----------|---------------------------|
+| Card container | `card` | "card" in name, bordered container, panel-like layout |
+| Avatar | `avatar` | "avatar", "profile", "user" + image display |
+| Skeleton loading | `skeleton` | `loading` variant selected |
+| Retry button | `button` | `errored` variant selected |
+
+### Installation
+
+Install primitives via:
+```bash
+npx shadcn@latest add <component> --yes
+```
+
+Install all inferred primitives before generating files.
+
+## Placeholder Image Services
+
+When scaffolding components that display images, use these placeholder services for demo/mock data:
+
+### Avatars (Pravatar)
+- URL: `https://i.pravatar.cc/{size}?u={unique-id}`
+- Example: `https://i.pravatar.cc/150?u=user@example.com`
+- The `u` parameter ensures consistent avatar for the same identifier
+
+### General Images (placehold.co)
+- URL: `https://placehold.co/{width}x{height}`
+- With colors: `https://placehold.co/{width}x{height}/{bg-color}/{text-color}`
+- Example: `https://placehold.co/400x300` or `https://placehold.co/400x300/png`
 
 ## Workflow checklist
 1. Collect inputs (component name, feature, variants)
 2. Validate component name (kebab-case)
 3. Resolve target feature module under features/
 4. Select state variants
-5. Determine any explicitly requested shadcn/ui primitives
-6. Verify/install only the requested primitives (if needed)
+5. Infer shadcn/ui primitives from component semantics
+6. Install all inferred primitives
 7. Create component directory and files from templates
 8. Update index.ts exports
 9. Run post-scaffold script (lint + format)
@@ -60,9 +91,9 @@ If invalid, explain why and re-prompt.
 ### 4. Select state variants
 
 Offer:
-- `loading` - Loading/skeleton state
+- `loading` - Loading/skeleton state (uses `skeleton` primitive)
 - `empty` - Empty state when no data
-- `errored` - Error state with optional retry action
+- `errored` - Error state with retry action (uses `button` primitive)
 - `view` - Presentational variant with UI-only local state
 - `server` - Async server component wrapper with Suspense streaming (for Next.js App Router)
 
@@ -73,18 +104,37 @@ Auto-select `server` when the user mentions any of:
 
 **Dependency:** If `server` is selected, automatically include `loading` (required for Suspense fallback).
 
-### 5. Determine explicitly requested shadcn/ui primitives
+### 5. Infer shadcn/ui primitives
 
-Only consider primitives “required” if the user request explicitly asks for them.
+Analyze the component name and user request to infer required primitives:
 
-Examples:
-- “Wrap in Card” → `card`
-- “Use Skeleton for loading” → `skeleton`
-- “Add a Retry Button” → `button`
+**Card** - Install when:
+- Component name contains "card" (e.g., `user-profile-card`, `product-card`)
+- User describes a "panel", "box", or "container" with borders/shadows
+- Component has a distinct bounded layout
 
-### 6. Verify/install only the requested primitives
+**Avatar** - Install when:
+- Component name contains "avatar", "profile", or "user"
+- User describes displaying a user image, profile picture, or initials
+- Component involves user/person representation
 
-If the shadcn MCP server is available and shows Connected in /mcp, use it to install requested primitives (card/skeleton/button) directly. Otherwise, install `via npx shadcn@latest add <primitive> --yes`.
+**Skeleton** - Install when:
+- `loading` variant is selected
+- Always use Skeleton for loading states (never plain text)
+
+**Button** - Install when:
+- `errored` variant is selected (for retry action)
+- User explicitly mentions buttons or actions
+
+### 6. Install inferred primitives
+
+Install all inferred primitives before generating files:
+
+```bash
+npx shadcn@latest add card avatar skeleton button --yes
+```
+
+Only install what's needed. If the shadcn MCP server is available and shows Connected in /mcp, use it to install primitives directly.
 
 ### 7. Generate files from templates
 
@@ -96,9 +146,9 @@ Always create:
 - `index.ts`
 
 Conditionally create:
-- `<component>-loading.tsx`
+- `<component>-loading.tsx` (uses Skeleton)
 - `<component>-empty.tsx`
-- `<component>-errored.tsx`
+- `<component>-errored.tsx` (uses Button for retry)
 - `<component>-view.tsx`
 - `<component>-server.tsx` (requires `loading` variant)
 
@@ -121,6 +171,7 @@ Run the after-scaffold script to lint and format the generated files:
 
 - Verify expected files exist.
 - Print a tree of created files + next steps.
+- List the shadcn primitives that were installed.
 
 ## Reference material
 

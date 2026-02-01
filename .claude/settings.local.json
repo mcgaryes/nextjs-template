@@ -16,7 +16,8 @@
       "Bash(while read f)",
       "Bash(done)",
       "Bash(chmod:*)",
-      "Bash(./scripts/after-scaffold-component.sh:*)"
+      "Bash(./scripts/after-scaffold-component.sh:*)",
+      "mcp__shadcn__search_items_in_registries"
     ]
   },
   "enableAllProjectMcpServers": true,
