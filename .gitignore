@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/documenation/requirements/alerts.spec.md
+/documenation/requirements/cache.spec.md
+/documenation/requirements/messaging.spec.md
+/documenation/requirements/notifications.spec.md
+/documenation/requirements/site-navigation.spec.md
