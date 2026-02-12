@@ -7,6 +7,7 @@
         "build": "next build",
         "build:analyze": "ANALYZE=true next build",
         "start": "next start",
+        "test": "node --test",
         "lint": "eslint",
         "format": "prettier --write \"app/**/*.ts*\" \"lib/**/*.ts*\" \"features/**/*.ts*\""
     },
